@@ -13,25 +13,26 @@ type Service struct {
 }
 
 type ServiceInterface interface {
-	PostArticleInService()
-	GetArticleInService()
+	postArticleInService()
+	getArticleInService()
+	newService()
 }
 
-func NewService(dbs *DBStruct) *Service {
+func newService(dbs *DBStruct) *Service {
 	return &Service{
 		db: dbs,
 	}
 }
 
-func (service *Service) PostArticleInService(ctx *gin.Context) {
+func (service *Service) postArticleInService(ctx *gin.Context) {
 	var article Article
 	err := ctx.ShouldBindJSON(&article)
 	if err != nil {
 
-		ctx.JSON(http.StatusBadRequest, article)
+		ctx.JSON(http.StatusOK, err)
 	}
 	article.CreatedAt = time.Now().String()
-	article, err = service.db.InsertArticle(article)
+	article, err = service.db.insertArticle(article)
 	if err != nil {
 		return
 	}
@@ -40,16 +41,19 @@ func (service *Service) PostArticleInService(ctx *gin.Context) {
 
 }
 
-func (service *Service) GetArticleInService(ctx *gin.Context) {
+func (service *Service) getArticleInService(ctx *gin.Context) {
 	var article Article
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, "Not an integer")
 	}
-	article, err = service.db.FindArticle(id, article)
+	article, err = service.db.findArticle(id, article)
+	//fmt.Println(err)
 	if err != nil {
-		ctx.JSON(http.StatusNoContent, "Not found")
+		ctx.JSON(http.StatusOK, gin.H{"message": err})
+		return
+	} else {
+		ctx.JSON(http.StatusOK, article)
 	}
-	ctx.JSON(http.StatusOK, article)
 
 }

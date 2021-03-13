@@ -8,27 +8,27 @@ type HandlerService struct {
 	service *Service
 }
 
-// type HandlerInterface interface {
-// 	PostArticle(ctx *gin.Context)
-// 	GetArticle(ctx *gin.Context)
-// }
+type HandlerInterface interface {
+	postArticle(ctx *gin.Context)
+	getArticle(ctx *gin.Context)
+}
 
-func (service *Service) GetHandler() *HandlerService {
+func (service *Service) newHandler() *HandlerService {
 	return &HandlerService{
 		service: service,
 	}
 
 }
-func (handler *HandlerService) MakeHandler(router *gin.RouterGroup) {
+func (handler *HandlerService) makeHandler(router *gin.RouterGroup) {
 
-	router.POST("/insertArticle", handler.PostArticle)
-	router.GET("/getArticle/:id", handler.GetArticle)
+	router.POST("/insertArticle", handler.postArticle)
+	router.GET("/getArticle/:id", handler.getArticle)
 }
 
-func (handler *HandlerService) PostArticle(ctx *gin.Context) {
-	handler.service.PostArticleInService(ctx)
+func (handler *HandlerService) postArticle(ctx *gin.Context) {
+	handler.service.postArticleInService(ctx)
 }
 
-func (handler *HandlerService) GetArticle(ctx *gin.Context) {
-	handler.service.GetArticleInService(ctx)
+func (handler *HandlerService) getArticle(ctx *gin.Context) {
+	handler.service.getArticleInService(ctx)
 }
