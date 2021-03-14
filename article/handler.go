@@ -13,14 +13,10 @@ type HandlerInterface interface {
 	getArticle(ctx *gin.Context)
 }
 
-func (service *Service) newHandler() *HandlerService {
-	return &HandlerService{
+func makeHandler(router *gin.RouterGroup, service *Service) {
+	handler := &HandlerService{
 		service: service,
 	}
-
-}
-func (handler *HandlerService) makeHandler(router *gin.RouterGroup) {
-
 	router.POST("/insertArticle", handler.postArticle)
 	router.GET("/getArticle/:id", handler.getArticle)
 }
