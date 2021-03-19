@@ -5,4 +5,5 @@ type Article struct {
 	Name        string `json:"name" bson:"name"`
 	IsPublished bool   `json:"ispublished" bson:"ispublished"`
 	CreatedAt   string `json:"createdAt" bson:"createdAt"`
+	UpdatedAt   string `json:"updatedAt" bson:"updatedAt"`
 }

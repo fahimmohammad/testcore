@@ -1,20 +1,12 @@
 package article
 
-import (
-	"net/http"
-	"strconv"
-	"time"
-
-	"github.com/gin-gonic/gin"
-)
-
 type Service struct {
 	db *DBStruct
 }
 
 type ServiceInterface interface {
-	postArticleInService()
-	getArticleInService()
+	PostArticleInService(article Article)
+	GetArticleInService(articleId string)
 	newService()
 }
 
@@ -24,36 +16,34 @@ func newService(dbs *DBStruct) *Service {
 	}
 }
 
-func (service *Service) postArticleInService(ctx *gin.Context) {
-	var article Article
-	err := ctx.ShouldBindJSON(&article)
+func (service *Service) PostArticleInService(article Article) (Article, error) {
+
+	article, err := service.db.insertArticle(article)
 	if err != nil {
-
-		ctx.JSON(http.StatusOK, err)
+		return Article{}, err
 	}
-	article.CreatedAt = time.Now().String()
-	article, err = service.db.insertArticle(article)
-	if err != nil {
-		return
-	}
-
-	ctx.JSON(http.StatusOK, article)
-
+	return article, nil
 }
 
-func (service *Service) getArticleInService(ctx *gin.Context) {
-	var article Article
-	id, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, "Not an integer")
-	}
-	article, err = service.db.findArticle(id, article)
-	//fmt.Println(err)
-	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{"message": err})
-		return
-	} else {
-		ctx.JSON(http.StatusOK, article)
-	}
+func (service *Service) GetArticleInService(articleId int) (Article, error) {
 
+	article, err := service.db.findArticle(articleId)
+
+	if err != nil {
+		return Article{}, err
+	} else {
+		return article, nil
+	}
+}
+
+func (service *Service) UpdateArticleInService(id int, article Article) (Article, error) {
+	article, err := service.db.updateArticle(id, article)
+	if err != nil {
+		return Article{}, err
+	}
+	return article, err
+}
+func (service *Service) DeleteArticleInService(id int) error {
+	err := service.db.deleteArticle(id)
+	return err
 }
